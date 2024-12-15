@@ -16,17 +16,17 @@ public class SwingAc1 extends JPanel implements ActionListener, MouseListener {
 	public static final int numTilesPerRow = width /tileSize;
 	public static int[][] baseGameData = new int[numTilesPerRow][numTilesPerRow]; //Stores 8x8 board layout
 	public static int[][] gameData = new int[numTilesPerRow][numTilesPerRow]; //Stores piece data in an 8x8
-	public static final int EMPTY = 0, ORANGE = 1, ORANGE_KING = 2, WHITE = 3, WHITE_KING = 4; //Values for gameData
+	public static final int EMPTY = 0, YELLOW = 1, YELLOW_KING = 2, WHITE = 3, WHITE_KING = 4; //Values for gameData
 	public static JFrame frame;
 	public boolean gameInProgress = true;
-	public int currentPlayer = ORANGE;
+	public int currentPlayer = YELLOW;
 	public boolean inPlay = false; //Is there a move function processing?
 	public static int[][] availablePlays = new int[numTilesPerRow][numTilesPerRow]; //Stores available plays in an 8x8
 	public int storedRow, storedCol;
 	public boolean isJump = false;
 	static BufferedImage crownImage = null;
 
-        public static int orangeScore = 0;
+        public static int yellowScore = 0;
         public static int whiteScore = 0;
     
         private JButton startOverButton;
@@ -43,7 +43,7 @@ public class SwingAc1 extends JPanel implements ActionListener, MouseListener {
 	
 	public SwingAc1() {
         // Reset scores
-		orangeScore = 0;
+		yellowScore = 0;
 		whiteScore = 0;
 		
 		// Initialize the game
@@ -78,11 +78,11 @@ public class SwingAc1 extends JPanel implements ActionListener, MouseListener {
 
         // Reset the game board and scores
         initializeBoard();
-        orangeScore = 0;
+        yellowScore = 0;
         whiteScore = 0;
 
-        // Set the current player to ORANGE
-        currentPlayer = ORANGE;
+        // Set the current player to YELLOW
+        currentPlayer = YELLOW;
 
         // Repaint the board
         repaint();
@@ -96,33 +96,33 @@ public class SwingAc1 extends JPanel implements ActionListener, MouseListener {
 
 
     public boolean gameOver() {
-    int orangeCount = 0;
+    int yellowCount = 0;
     int whiteCount = 0;
 
     for (int row = 0; row < numTilesPerRow; row++) {
         for (int col = 0; col < numTilesPerRow; col++) {
-            if (gameData[col][row] == ORANGE || gameData[col][row] == ORANGE_KING) {
-                orangeCount++;
+            if (gameData[col][row] == YELLOW || gameData[col][row] == YELLOW_KING) {
+                yellowCount++;
             } else if (gameData[col][row] == WHITE || gameData[col][row] == WHITE_KING) {
                 whiteCount++;
             }
         }
     }
 
-    if (orangeCount == 0 || whiteCount == 0) {
-        showGameOverMessage("Orange", orangeCount, whiteCount);
+    if (yellowCount == 0 || whiteCount == 0) {
+        showGameOverMessage("Yellow", yellowCount, whiteCount);
         return true;
-    } else if (orangeCount == 0 || whiteCount == 0){
-        showGameOverMessage("White", orangeCount, whiteCount);
+    } else if (yellowCount == 0 || whiteCount == 0){
+        showGameOverMessage("White", yellowCount, whiteCount);
         return true;
     }else {
         return false;
     }
 }
 
-private void showGameOverMessage(String winner, int orangeScore, int whiteScore) {
+private void showGameOverMessage(String winner, int yellowScore, int whiteScore) {
     SwingUtilities.invokeLater(() -> {
-        JOptionPane.showMessageDialog(this, winner + " wins!\nScore: " + orangeScore + " - " + whiteScore, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, winner + " wins!\nScore: " + yellowScore + " - " + whiteScore, "Game Over", JOptionPane.INFORMATION_MESSAGE);
         askForRestart();
     });
 }
@@ -144,19 +144,19 @@ private void askForRestart() {
     }
 }
  
-    public boolean gameOverInternal(int col, int row, int orange, int white) {
-        if (gameData[col][row] == ORANGE || gameData[col][row] == ORANGE_KING)
-            orange += 1;
+    public boolean gameOverInternal(int col, int row, int yellow, int white) {
+        if (gameData[col][row] == YELLOW || gameData[col][row] == YELLOW_KING)
+            yellow += 1;
         if (gameData[col][row] == WHITE || gameData[col][row] == WHITE_KING)
             white += 1;
         if (col == numTilesPerRow - 1 && row == numTilesPerRow - 1) {
-            return orange == 0 || white == 0;
+            return yellow == 0 || white == 0;
         }
         if (col == numTilesPerRow - 1) {
             row += 1;
             col = -1;
         }
-        return gameOverInternal(col + 1, row, orange, white);
+        return gameOverInternal(col + 1, row, yellow, white);
     }
 	
 	public void window(int width, int height, SwingAc1 game){ //draw the frame and add exit functionality
@@ -189,11 +189,11 @@ private void askForRestart() {
 	public void initializeBoard(){
 		//UPDATE THE STARTING POSITIONS
 				for(int col=0; col < (numTilesPerRow); col+=2){
-					gameData[col][5] = ORANGE;
-					gameData[col][7] = ORANGE;
+					gameData[col][5] = YELLOW;
+					gameData[col][7] = YELLOW;
 				}
 				for(int col=1; col < (numTilesPerRow); col+=2)
-					gameData[col][6] = ORANGE;
+					gameData[col][6] = YELLOW;
 				for(int col=1; col < (numTilesPerRow); col+=2){
 					gameData[col][0] = WHITE;
 					gameData[col][2] = WHITE;
@@ -225,9 +225,9 @@ private void askForRestart() {
 		// Draw scores
 		g.setFont(new Font("Arial", Font.BOLD, 28));
 		
-		// Draw Orange score
+		// Draw Yellow score
 		g.setColor(Color.ORANGE);
-		g.drawString("Orange: " + orangeScore, 30, 40);
+		g.drawString("Yellow: " + yellowScore, 30, 40);
 		
 		// Draw White score
 		g.setColor(Color.WHITE);
@@ -235,9 +235,9 @@ private void askForRestart() {
 		
 		// Draw current player's turn
 		g.setFont(new Font("Arial", Font.BOLD, 20));
-		String turnText = (currentPlayer == ORANGE ? "Orange" : "White") + "'s Turn";
+		String turnText = (currentPlayer == YELLOW ? "Yellow" : "White") + "'s Turn";
 		int turnWidth = g.getFontMetrics().stringWidth(turnText);
-		g.setColor(currentPlayer == ORANGE ? Color.ORANGE : Color.WHITE);
+		g.setColor(currentPlayer == YELLOW ? Color.ORANGE : Color.WHITE);
 		g.drawString(turnText, (width - turnWidth) / 2, 40);
 		
 		// Offset the board to make room for the score panel
@@ -270,8 +270,8 @@ private void askForRestart() {
 						drawPiece(col, row, g, Color.WHITE);
 						g.drawImage(crownImage, (col*tileSize)+6, (row*tileSize)+6, tileSize-12, tileSize-12, null);
 					}
-					case ORANGE -> drawPiece(col, row, g, Color.ORANGE);
-					case ORANGE_KING -> {
+					case YELLOW -> drawPiece(col, row, g, Color.ORANGE);
+					case YELLOW_KING -> {
 						drawPiece(col, row, g, Color.ORANGE);
 						g.drawImage(crownImage, (col*tileSize)+6, (row*tileSize)+6, tileSize-12, tileSize-12, null);
 					}
@@ -339,7 +339,7 @@ private void askForRestart() {
 	
 	private boolean isCurrentPlayersPiece(int col, int row) {
 		int piece = gameData[col][row];
-		return (currentPlayer == ORANGE && (piece == ORANGE || piece == ORANGE_KING)) ||
+		return (currentPlayer == YELLOW && (piece == YELLOW || piece == YELLOW_KING)) ||
 			   (currentPlayer == WHITE && (piece == WHITE || piece == WHITE_KING));
 	}
 	
@@ -353,9 +353,9 @@ private void askForRestart() {
 	}
 	
 	public void swapPlayer(){
-		if(currentPlayer == ORANGE)
+		if(currentPlayer == YELLOW)
 			currentPlayer = WHITE;
-		else currentPlayer = ORANGE;
+		else currentPlayer = YELLOW;
 	}
 	
 	public void makeMove(int col, int row, int storedCol, int storedRow){
@@ -413,14 +413,14 @@ private void askForRestart() {
 	}
 	
 	public boolean isKing(int col, int row){
-            return gameData[col][row] == ORANGE_KING || gameData[col][row] == WHITE_KING;
+            return gameData[col][row] == YELLOW_KING || gameData[col][row] == WHITE_KING;
 	}
 	
 	public int checkOpponent(int col, int row){
-		if(gameData[col][row] == ORANGE || gameData[col][row] ==  ORANGE_KING)
+		if(gameData[col][row] == YELLOW || gameData[col][row] ==  YELLOW_KING)
 			return WHITE;
 		else
-			return ORANGE;
+			return YELLOW;
 	}
 	
 	public void checkExtraJumps(int col, int row){
@@ -442,8 +442,8 @@ private void askForRestart() {
 	}
 	
 	public void checkKing(int col, int row){
-		if(gameData[col][row] == ORANGE && row == 0)
-			gameData[col][row] = ORANGE_KING;
+		if(gameData[col][row] == YELLOW && row == 0)
+			gameData[col][row] = YELLOW_KING;
 		else if(gameData[col][row] == WHITE && row == numTilesPerRow-1)
 			gameData[col][row] = WHITE_KING;
 		else {
@@ -457,8 +457,8 @@ private void askForRestart() {
 		
 		// Update scores based on the piece being captured
 		if (gameData[removedCol][removedRow] == WHITE || gameData[removedCol][removedRow] == WHITE_KING) {
-			orangeScore++;
-		} else if (gameData[removedCol][removedRow] == ORANGE || gameData[removedCol][removedRow] == ORANGE_KING) {
+			yellowScore++;
+		} else if (gameData[removedCol][removedRow] == YELLOW || gameData[removedCol][removedRow] == YELLOW_KING) {
 			whiteScore++;
 		}
 		
@@ -484,11 +484,11 @@ private void askForRestart() {
 		}
 		
 		// Check for jumps first
-		boolean hasJumps = checkJumps(col, row, piece == ORANGE || isKing, piece == WHITE || isKing);
+		boolean hasJumps = checkJumps(col, row, piece == YELLOW || isKing, piece == WHITE || isKing);
 		
 		// If no jumps are available, check for regular moves
 		if (!hasJumps) {
-			checkRegularMoves(col, row, piece == ORANGE || isKing, piece == WHITE || isKing);
+			checkRegularMoves(col, row, piece == YELLOW || isKing, piece == WHITE || isKing);
 		}
 		
 		repaint();
@@ -539,10 +539,10 @@ private void askForRestart() {
 		
 		// Check if jumped piece is opponent's
 		int jumpedPiece = gameData[jumpedCol][jumpedRow];
-		if (currentPlayer == ORANGE) {
+		if (currentPlayer == YELLOW) {
 			return jumpedPiece == WHITE || jumpedPiece == WHITE_KING;
 		} else {
-			return jumpedPiece == ORANGE || jumpedPiece == ORANGE_KING;
+			return jumpedPiece == YELLOW || jumpedPiece == YELLOW_KING;
 		}
 	}
 	
@@ -571,7 +571,7 @@ private void askForRestart() {
 	}	
 	
 	public boolean checkTeamPiece(int col, int row){
-		if(currentPlayer == ORANGE && (gameData[col][row] == ORANGE || gameData[col][row] == ORANGE_KING)) //bottom
+		if(currentPlayer == YELLOW && (gameData[col][row] == YELLOW || gameData[col][row] == YELLOW_KING)) //bottom
 			return true;
             return currentPlayer == WHITE && (gameData[col][row] == WHITE || gameData[col][row] == WHITE_KING); //top
 	}
@@ -584,8 +584,8 @@ private void askForRestart() {
 		//Steps for checking if canJump is true: determine piece within movement. Then check if its an opponent piece, then if the space behind it is empty
 		//and in bounds
 		// 4 conditions based on column and row relations to the other piece
-		if(((gameData[col][row] == ORANGE || gameData[col][row] == ORANGE_KING) && (gameData[opponentCol][opponentRow] == WHITE || gameData[opponentCol][opponentRow] == WHITE_KING)) || (gameData[col][row] == WHITE || gameData[col][row] == WHITE_KING) && (gameData[opponentCol][opponentRow] == ORANGE || gameData[opponentCol][opponentRow] == ORANGE_KING)){ 
-			//If the piece is white/ORANGE and opponent piece is opposite TODO fix this if. It's so ugly
+		if(((gameData[col][row] == YELLOW || gameData[col][row] == YELLOW_KING) && (gameData[opponentCol][opponentRow] == WHITE || gameData[opponentCol][opponentRow] == WHITE_KING)) || (gameData[col][row] == WHITE || gameData[col][row] == WHITE_KING) && (gameData[opponentCol][opponentRow] == YELLOW || gameData[opponentCol][opponentRow] == YELLOW_KING)){ 
+			//If the piece is white/YELLOW and opponent piece is opposite TODO fix this if. It's so ugly
 			if(opponentCol == 0 || opponentCol == numTilesPerRow-1 || opponentRow == 0 || opponentRow == numTilesPerRow-1)
 				return false;
 			int[] toData = getJumpPos(col, row, opponentCol, opponentRow);
@@ -621,29 +621,29 @@ private void askForRestart() {
 	public void mouseExited(MouseEvent e) {}
 
 	private void checkForWinner() {
-    int orangeCount = 0;
+    int yellowCount = 0;
     int whiteCount = 0;
 
     for (int row = 0; row < numTilesPerRow; row++) {
         for (int col = 0; col < numTilesPerRow; col++) {
-            if (gameData[col][row] == ORANGE || gameData[col][row] == ORANGE_KING) {
-                orangeCount++;
+            if (gameData[col][row] == YELLOW || gameData[col][row] == YELLOW_KING) {
+                yellowCount++;
             } else if (gameData[col][row] == WHITE || gameData[col][row] == WHITE_KING) {
                 whiteCount++;
             }
         }
     }
 
-    if (orangeCount == 0 || whiteCount == 0) {
+    if (yellowCount == 0 || whiteCount == 0) {
         // Update scores only when the game is over
-        if (orangeCount == 0) {
+        if (yellowCount == 0) {
             whiteScore++;
         } else if (whiteCount == 0) {
-            orangeScore++;
+            yellowScore++;
         }
 
         // Show the game-over message with scores
-        showGameOverMessage((orangeCount == 0) ? "White" : "Yellow", orangeScore, whiteScore);
+        showGameOverMessage((yellowCount == 0) ? "White" : "Yellow", yellowScore, whiteScore);
     }
 }
 }
