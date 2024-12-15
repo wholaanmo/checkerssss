@@ -46,24 +46,7 @@ public class SwingAc1 extends JPanel implements ActionListener, MouseListener {
 		yellowTime = 60;
 		whiteTime = 60;
 		
-		timer = new Timer(1000, e -> {
-			if (currentPlayer == YELLOW) {
-				yellowTime--;
-				if (yellowTime <= 0) {
-					timer.stop();
-					whiteScore++;
-					showGameOverMessage("White", yellowScore, whiteScore);
-				}
-			} else {
-				whiteTime--;
-				if (whiteTime <= 0) {
-					timer.stop();
-					yellowScore++;
-					showGameOverMessage("Yellow", yellowScore, whiteScore);
-				}
-			}
-			repaint();
-		});
+		timer = new Timer(1000, this);
 		timer.start();
 		
 		window(width, height, this);
@@ -144,11 +127,19 @@ public class SwingAc1 extends JPanel implements ActionListener, MouseListener {
     }
 }
 
-private void showGameOverMessage(String winner, int yellowScore, int whiteScore) {
+private void showGameOverMessage(String winner, int yellowCount, int whiteCount) {
 		gameInProgress = false;
 		timer.stop();
-		String message = String.format("%s wins!\nFinal Score:\nYellow: %d\nWhite: %d", 
-			winner, yellowScore, whiteScore);
+		
+		String message;
+		if (yellowTime <= 0) {
+			message = "Time's up! White wins!\nFinal Piece Count:\nYellow: 0\nWhite: " + whiteCount;
+		} else if (whiteTime <= 0) {
+			message = "Time's up! Yellow wins!\nFinal Piece Count:\nYellow: " + yellowCount + "\nWhite: 0";
+		} else {
+			message = String.format("%s wins!\nFinal Piece Count:\nYellow: %d\nWhite: %d", 
+				winner, yellowCount, whiteCount);
+		}
 		
 		int choice = JOptionPane.showConfirmDialog(
 			this,
@@ -345,13 +336,6 @@ private void showGameOverMessage(String winner, int yellowScore, int whiteScore)
 		int removedCol = (col + storedCol) / 2;
 		int removedRow = (row + storedRow) / 2;
 		
-		// Update scores based on the piece being captured
-		if (gameData[removedCol][removedRow] == WHITE || gameData[removedCol][removedRow] == WHITE_KING) {
-			yellowScore++;
-		} else if (gameData[removedCol][removedRow] == YELLOW || gameData[removedCol][removedRow] == YELLOW_KING) {
-			whiteScore++;
-		}
-		
 		// Remove the piece
 		gameData[removedCol][removedRow] = EMPTY;
 		repaint(); // Ensure the display updates
@@ -525,24 +509,49 @@ private void showGameOverMessage(String winner, int yellowScore, int whiteScore)
     }
 
     if (yellowCount == 0 || whiteCount == 0) {
-        // Update scores only when the game is over
+        timer.stop();
+        gameInProgress = false;
         if (yellowCount == 0) {
-            whiteScore++;
-        } else if (whiteCount == 0) {
-            yellowScore++;
+            showGameOverMessage("White", yellowCount, whiteCount);
+        } else {
+            showGameOverMessage("Yellow", yellowCount, whiteCount);
         }
-
-        // Show the game-over message with scores
-        showGameOverMessage((yellowCount == 0) ? "White" : "Yellow", yellowScore, whiteScore);
     }
 }
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == startOverButton) {
 			System.out.println("Play Again button clicked");
 			playAgain(); 
+		} else {
+			updateTimer();
 		}
+	}
+	
+	public void updateTimer() {
+		if (!gameInProgress) {
+			return;
+		}
+		
+		if (currentPlayer == YELLOW) {
+			yellowTime--;
+			if (yellowTime <= 0) {
+				timer.stop();
+				gameInProgress = false;
+				showGameOverMessage("White", 0, 12); // White wins by timeout
+				return;
+			}
+		} else {
+			whiteTime--;
+			if (whiteTime <= 0) {
+				timer.stop();
+				gameInProgress = false;
+				showGameOverMessage("Yellow", 12, 0); // Yellow wins by timeout
+				return;
+			}
+		}
+		repaint();
 	}
 	
 	public void window(int width, int height, SwingAc1 game){ 
